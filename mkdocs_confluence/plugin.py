@@ -14,7 +14,7 @@ from os import environ
 TEMPLATE_BODY = "<p> TEMPLATE </p>"
 
 
-class MkdocsWithConfluence(BasePlugin):
+class MkdocsConfluence(BasePlugin):
     _id = 0
     config_scheme = (
         ("host_url", config_options.Type(str, default=None)),
@@ -36,7 +36,7 @@ class MkdocsWithConfluence(BasePlugin):
         self.flen = 1
 
     def on_nav(self, nav, config, files):
-        MkdocsWithConfluence.tab_nav = []
+        MkdocsConfluence.tab_nav = []
         navigation_items = nav.__repr__()
         for n in navigation_items.split("\n"):
             # print(f"* {n}")
@@ -44,10 +44,10 @@ class MkdocsWithConfluence(BasePlugin):
             spaces = leading_spaces * " "
             if "Page" in n:
                 p = spaces + self.__get_page_title(n)
-                MkdocsWithConfluence.tab_nav.append(p)
+                MkdocsConfluence.tab_nav.append(p)
             if "Section" in n:
                 s = spaces + self.__get_section_title(n)
-                MkdocsWithConfluence.tab_nav.append(s)
+                MkdocsConfluence.tab_nav.append(s)
 
     def on_files(self, files, config):
         pages = files.documentation_pages()
@@ -95,18 +95,18 @@ class MkdocsWithConfluence(BasePlugin):
             self.dryrun = False
 
     def on_page_markdown(self, markdown, page, config, files):
-        MkdocsWithConfluence._id += 1
+        MkdocsConfluence._id += 1
         self.pw = self.config["password"]
         self.user = self.config["username"]
 
         if self.enabled:
             if self.simple_log is True:
                 print("INFO    - Mkdocs With Confluence: Page export progress: [", end="", flush=True)
-                for i in range(MkdocsWithConfluence._id):
+                for i in range(MkdocsConfluence._id):
                     print("#", end="", flush=True)
-                for j in range(self.flen - MkdocsWithConfluence._id):
+                for j in range(self.flen - MkdocsConfluence._id):
                     print("-", end="", flush=True)
-                print(f"] ({MkdocsWithConfluence._id} / {self.flen})", end="\r", flush=True)
+                print(f"] ({MkdocsConfluence._id} / {self.flen})", end="\r", flush=True)
 
             if self.config["verbose"]:
                 print(f"\nHandling Page '{page.title}' (And Parent Nav Pages if necessary):\n")
@@ -207,7 +207,7 @@ class MkdocsWithConfluence(BasePlugin):
                             print(f" - ERR, Parents does not match: '{parent}' =/= '{parent_name}' Aborting...")
                         return markdown
                     self.update_page(page.title, confluence_body)
-                    for i in MkdocsWithConfluence.tab_nav:
+                    for i in MkdocsConfluence.tab_nav:
                         if page.title in i:
                             n_kol = len(i + " *NEW PAGE*")
                             print(f"INFO    - Mkdocs With Confluence: {i} *UPDATE*")
@@ -230,7 +230,7 @@ class MkdocsWithConfluence(BasePlugin):
                             print(f"Trying to ADD page '{parent1}' to main parent({main_parent}) ID: {main_parent_id}")
                             body = TEMPLATE_BODY.replace("TEMPLATE", parent1)
                             self.add_page(parent1, main_parent_id, body)
-                            for i in MkdocsWithConfluence.tab_nav:
+                            for i in MkdocsConfluence.tab_nav:
                                 if parent1 in i:
                                     n_kol = len(i + "INFO    - Mkdocs With Confluence:" + " *NEW PAGE*")
                                     print(f"INFO    - Mkdocs With Confluence: {i} *NEW PAGE*")
@@ -240,7 +240,7 @@ class MkdocsWithConfluence(BasePlugin):
                         print(f"Trying to ADD page '{parent}' to parent1({parent1}) ID: {second_parent_id}")
                         body = TEMPLATE_BODY.replace("TEMPLATE", parent)
                         self.add_page(parent, second_parent_id, body)
-                        for i in MkdocsWithConfluence.tab_nav:
+                        for i in MkdocsConfluence.tab_nav:
                             if parent in i:
                                 n_kol = len(i + "INFO    - Mkdocs With Confluence:" + " *NEW PAGE*")
                                 print(f"INFO    - Mkdocs With Confluence: {i} *NEW PAGE*")
@@ -249,7 +249,7 @@ class MkdocsWithConfluence(BasePlugin):
                     # if self.config['debug']:
                     print(f"Trying to ADD page '{page.title}' to parent0({parent}) ID: {parent_id}")
                     self.add_page(page.title, parent_id, confluence_body)
-                    for i in MkdocsWithConfluence.tab_nav:
+                    for i in MkdocsConfluence.tab_nav:
                         if page.title in i:
                             n_kol = len(i + "INFO    - Mkdocs With Confluence:" + " *NEW PAGE*")
                             print(f"INFO    - Mkdocs With Confluence: {i} *NEW PAGE*")

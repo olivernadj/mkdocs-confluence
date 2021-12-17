@@ -1,7 +1,7 @@
 [run]
 branch = True
-source = mkdocs_with_confluence
-include = */mkdocs_with_confluence/*
+source = mkdocs_confluence
+include = */mkdocs_confluence/*
 
 [report]
 exclude_lines =
