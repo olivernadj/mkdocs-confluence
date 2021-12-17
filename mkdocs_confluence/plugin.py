@@ -155,22 +155,7 @@ class MkdocsConfluence(BasePlugin):
 
                 tf = tempfile.NamedTemporaryFile(delete=False)
                 f = open(tf.name, "w")
-
-                files = []
-                try:
-                    for match in re.finditer(r'img src="file://(.*)" s', markdown):
-                        if self.config["debug"]:
-                            print(f"FOUND IMAGE: {match.group(1)}")
-                        files.append(match.group(1))
-                except AttributeError as e:
-                    if self.config["debug"]:
-                        print(f"WARN(({e}): No images found in markdown. Proceed..")
-
-                new_markdown = re.sub(
-                    r'<img src="file:///tmp/', '<p><ac:image ac:height="350"><ri:attachment ri:filename="', markdown
-                )
-                new_markdown = re.sub(r'" style="page-break-inside: avoid;">', '"/></ac:image></p>', new_markdown)
-                confluence_body = self.confluence_mistune(new_markdown)
+                confluence_body = self.confluence_mistune(markdown)
                 f.write(confluence_body)
                 if self.config["debug"]:
                     print(confluence_body)
@@ -178,6 +163,16 @@ class MkdocsConfluence(BasePlugin):
                 new_name = "confluence_page_" + page_name.replace(" ", "_") + ".html"
                 shutil.copy(f.name, new_name)
                 f.close()
+
+                embeded_files = []
+                for match in re.finditer(r'<ri:attachment ri:filename="([^\"]+)"', confluence_body):
+                    embeded_files.append(match.group(1))
+
+                attachements = []
+                for embeded_file in embeded_files:
+                    for file in files:
+                        if os.path.basename(file.src_path) == embeded_file:
+                            attachements.append(os.path.join(config['docs_dir'], file.src_path))
 
                 if self.config["debug"]:
                     print(
@@ -254,12 +249,13 @@ class MkdocsConfluence(BasePlugin):
                             n_kol = len(i + "INFO    - Mkdocs With Confluence:" + " *NEW PAGE*")
                             print(f"INFO    - Mkdocs With Confluence: {i} *NEW PAGE*")
 
-                if files:
+                if attachements:
                     if self.config["debug"]:
-                        print(f"\nUPLOADING ATTACHMENTS TO CONFLUENCE, DETAILS:\n" f"FILES: {files}\n")
+                        print(f"\nUPLOADING ATTACHMENTS TO CONFLUENCE, DETAILS:\n" f"FILES: {attachements}\n")
+                        print("\n\t".join(attachements))
 
-                    print(f"\033[A\033[F\033[{n_kol}G  *NEW ATTACHMENTS({len(files)})*")
-                    for f in files:
+                    print(f"\033[A\033[F\033[{n_kol}G  *NEW ATTACHMENTS({len(attachements)})*")
+                    for f in attachements:
                         self.add_attachment(page.title, f)
 
             except IndexError as e:
@@ -299,7 +295,7 @@ class MkdocsConfluence(BasePlugin):
 
             if not self.dryrun:
                 r = requests.post(url, headers=headers, files=files, auth=auth)
-                r.raise_for_status()
+                # r.raise_for_status()
                 if r.status_code == 200:
                     print("OK!")
                 else:

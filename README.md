@@ -1,8 +1,8 @@
 ![PyPI](https://img.shields.io/pypi/v/mkdocs-confluence)
-[![Build Status](https://travis-ci.com/pawelsikora/mkdocs-confluence.svg?branch=main)](https://travis-ci.com/pawelsikora/mkdocs-confluence)
-[![codecov](https://codecov.io/gh/pawelsikora/mkdocs-confluence/branch/master/graph/badge.svg)](https://codecov.io/gh/pawelsikora/mkdocs-confluence)
+[![Build Status](https://travis-ci.com/olivernadj/mkdocs-confluence.svg?branch=main)](https://travis-ci.com/olivernadj/mkdocs-confluence)
+[![codecov](https://codecov.io/gh/olivernadj/mkdocs-confluence/branch/master/graph/badge.svg)](https://codecov.io/gh/olivernadj/mkdocs-confluence)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/mkdocs-confluence)
-![GitHub contributors](https://img.shields.io/github/contributors/pawelsikora/mkdocs-confluence)
+![GitHub contributors](https://img.shields.io/github/contributors/olivernadj/mkdocs-confluence)
 ![PyPI - License](https://img.shields.io/pypi/l/mkdocs-confluence)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mkdocs-confluence)
 # mkdocs-confluence 
