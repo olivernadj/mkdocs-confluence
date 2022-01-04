@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="mkdocs-confluence",
-    version="0.2.3.dev2",
+    version="0.2.3.dev3",
     description="MkDocs plugin for uploading markdown documentation to Confluence via Confluence REST API",
     long_description=long_description,
     long_description_content_type="text/markdown",

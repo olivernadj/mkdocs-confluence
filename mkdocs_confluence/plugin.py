@@ -4,6 +4,7 @@ import re
 import tempfile
 import shutil
 import requests
+from requests.exceptions import HTTPError
 import mimetypes
 import mistune
 from mkdocs.config import config_options
@@ -42,10 +43,10 @@ class MkdocsConfluence(BasePlugin):
             # print(f"* {n}")
             leading_spaces = len(n) - len(n.lstrip(" "))
             spaces = leading_spaces * " "
-            if "Page" in n:
+            if n.startswith("Page"):
                 p = spaces + self.__get_page_title(n)
                 MkdocsConfluence.tab_nav.append(p)
-            if "Section" in n:
+            if n.startswith("Section"):
                 s = spaces + self.__get_section_title(n)
                 MkdocsConfluence.tab_nav.append(s)
 
@@ -254,13 +255,17 @@ class MkdocsConfluence(BasePlugin):
                         print(f"\nUPLOADING ATTACHMENTS TO CONFLUENCE, DETAILS:\n" f"FILES: {attachements}\n")
                         print("\n\t".join(attachements))
 
-                    print(f"\033[A\033[F\033[{n_kol}G  *NEW ATTACHMENTS({len(attachements)})*")
+                    print(f"\033[A\033[F\033[G  *NEW ATTACHMENTS({len(attachements)})*")
                     for f in attachements:
                         self.add_attachment(page.title, f)
 
             except IndexError as e:
                 print(f"ERR({e}): Exception error!")
                 return markdown
+
+            except HTTPError as e:
+                print(f"HTTPError:" + str(e))
+                raise e
 
         return markdown
 
@@ -294,7 +299,7 @@ class MkdocsConfluence(BasePlugin):
             files = {"file": (filename, open(filename, "rb"), content_type)}
 
             if not self.dryrun:
-                r = requests.post(url, headers=headers, files=files, auth=auth)
+                r = requests.post(url, headers=headers, files=files, data={"minorEdit": True}, auth=auth)
                 # r.raise_for_status()
                 if r.status_code == 200:
                     print("OK!")
@@ -376,7 +381,7 @@ class MkdocsConfluence(BasePlugin):
                 "type": "page",
                 "space": {"key": space},
                 "body": {"storage": {"value": page_content_in_storage_format, "representation": "storage"}},
-                "version": {"number": page_version},
+                "version": {"number": page_version, "minorEdit": True},
             }
 
             if not self.dryrun:
